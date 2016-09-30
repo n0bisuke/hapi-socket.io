@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta property="og:title" content="Milkcocoaで作ったリアルタイムチャット" />
+    <meta property="og:type" content="chat" />
+    <meta property="og:description" content="リアルタイムチャット" />
+    <title>hapi+socket.ioで作ったリアルタイムチャット</title>
+</head>
+
+<body>
+    <div class="header">
+        <h1 class="logo">CHAT</h1>
+    </div>
+
+    <div class="container">
+        <div class="postarea cf">
+            <div class="postarea-text">
+                <textarea name="" id="content" cols="60" rows="2" placeholder="Enterで投稿"></textarea>
+            </div>
+            <button id="post" class="postarea-button">投稿する</button>
+        </div>
+    </div>
+
+    <div id="messages" class="content">
+        <div id="dummy"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let $btn = document.querySelector('#post');
+        let $content = document.querySelector('#content');
+        let $messageBody = document.querySelector('#dummy');
+        $btn.addEventListener('click', emitMessage, false);
+
+        let socket = io();
+        console.log(socket);
+        socket.on('chat message', (msg) => {
+            console.log('message: ' + msg);
+            renderMessage(msg);
+        });
+
+        //メッセージを送信
+        function emitMessage(){
+            socket.emit('chat message', $content.value);
+            $content.value = ''; //テキストエリアの中身を空に
+        }
+
+        //メッセージのレンダリング
+        function renderMessage(message) {
+            let $newDiv = document.createElement("div");
+            $newDiv.innerHTML = message;
+            $messageBody.appendChild($newDiv);
+        }
+
+    </script>
+</body>
+</html>
